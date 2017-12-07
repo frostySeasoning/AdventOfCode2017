@@ -51,11 +51,13 @@ function stringToArrayOfArraysOfStrings(string, sep1, sep2)
   return string.split(sep1).map(a => a.split(sep2));
 }
 
+// 451 for given input
 function solve041()
 {
   return countValidPhrases(stringToArrayOfArraysOfStrings(input, sep1, sep2), function(s1,s2){return s1==s2;});
 }
 
+// 223 for given input
 function solve042()
 {
   return countValidPhrases(stringToArrayOfArraysOfStrings(input, sep1, sep2), areStringsAnagrams);
