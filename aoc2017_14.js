@@ -1,3 +1,28 @@
+function getGrid(knotHashes_ArrStr)
+{
+  var grid_ArrArrBool = [];
+  var knotHashesLength_Int = knotHashes_ArrStr.length;
+  for(let i = 0; i < knotHashesLength_Int; i++)
+  {
+    grid_ArrArrBool.push(getBinaryRepresentationOfHexDigits(knotHashes_ArrStr[i]).split("").map(item => { return item == "1"}));
+  }
+  return grid_ArrArrBool;
+}
+
+function hideGroup(grid_ArrArrBool, x_Int, y_Int)
+{
+  if(x_Int >= 0 && x_Int < grid_ArrArrBool.length
+     && y_Int >= 0 && y_Int < grid_ArrArrBool[x_Int].length
+     && grid_ArrArrBool[x_Int][y_Int])
+  {
+    grid_ArrArrBool[x_Int][y_Int] = false;
+    hideGroup(grid_ArrArrBool, x_Int+1, y_Int);
+    hideGroup(grid_ArrArrBool, x_Int-1, y_Int);
+    hideGroup(grid_ArrArrBool, x_Int, y_Int+1);
+    hideGroup(grid_ArrArrBool, x_Int, y_Int-1);
+  }
+}
+
 function getBinaryRepresentationOfHexDigits(hexDigits_Str)
 {
   return hexDigits_Str.replace(/./g, match => { return parseInt(match, 16).toString(2).padStart(4, "0") })
@@ -13,6 +38,32 @@ function solve141()
     count_Int += getBinaryRepresentationOfHexDigits(knotHash_Str).split("").map(item => { return parseInt(item, 10); }).reduce((sum, value) => { return sum + value}, 0);
   }
   
+  return count_Int;
+}
+
+// 1180 for the given input
+function solve142()
+{
+  var count_Int = 0;
+  var knotHashes_ArrStr = [];
+  for(let i = 0; i < 128; i++)
+  {
+    knotHashes_ArrStr.push(getAdvancedKnotHash(input.concat("-", i)));
+  }
+  var grid_ArrArrBool = getGrid(knotHashes_ArrStr);
+  var gridWidth_Int = grid_ArrArrBool.length;
+  var gridHeight_Int = grid_ArrArrBool[0].length;
+  for(let iX = 0; iX < gridWidth_Int; iX++)
+  {
+    for(let iY = 0; iY < gridHeight_Int; iY++)
+    {
+      if(grid_ArrArrBool[iX][iY])
+      {
+        count_Int++;
+        hideGroup(grid_ArrArrBool, iX, iY);
+      }
+    }
+  }
   return count_Int;
 }
 
