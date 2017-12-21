@@ -1,10 +1,10 @@
-/* 19.1 
+/* 20.1 
   Just look for the particle with the lowest acceleration.
   I had to look just briefly at my input to find the right particle (id = 150; a=<-1,0,0>).
 */
 
 // 657 for given input
-function solve192()
+function solve202()
 {
   input = input.replace(/>, /g, ";");
   input = input.replace(/[pva=<>]/g, "");
