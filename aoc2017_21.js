@@ -1,3 +1,84 @@
+// 160 for given input and 5 iterations
+// 2271537 for given input and 18 iterations
+function solve21(iterations_int)
+{
+  var startingPattern_ArrArr = getArrArrRepresentation(".#./..#/###");
+  var enhancementRules2_MapStrStr = getEnhancementRulesMap(input21.split("\n").filter(element => { return element.indexOf("/") == 2; }));
+  var enhancementRules3_MapStrStr = getEnhancementRulesMap(input21.split("\n").filter(element => { return element.indexOf("/") == 3; }));
+  var pattern_ArrArr = startingPattern_ArrArr.slice();
+  
+  for(let i = 0; i < iterations_int; i++)
+  {
+    if(pattern_ArrArr.length % 2 == 0)
+    {
+      pattern_ArrArr = getEnhancedPattern(pattern_ArrArr, enhancementRules2_MapStrStr, 2);
+    }
+    else if(pattern_ArrArr.length % 3 == 0)
+    {
+      pattern_ArrArr = getEnhancedPattern(pattern_ArrArr, enhancementRules3_MapStrStr, 3);
+    }
+    
+    console.log(pattern_ArrArr);
+  }
+  var pattern_Str = getStringRepresentation(pattern_ArrArr);
+  var count_Int = 0;
+  for(let i = 0, iLimit = pattern_Str.length; i < iLimit; i++)
+  {
+    if(pattern_Str[i] == "#")
+    {
+      count_Int++;
+    }
+  }
+  return count_Int;
+}
+
+function getEnhancedPattern(pattern_ArrArr, enhancementRules_MapStrStr, subSquareSize_Int)
+{
+  var enhancedPattern_ArrArr = [];
+  for(let i = 0, iLimit = pattern_ArrArr.length / subSquareSize_Int * (subSquareSize_Int + 1); i < iLimit; i++)
+  {
+    enhancedPattern_ArrArr.push([]);
+  }
+  for(let i1 = 0, i1Limit = pattern_ArrArr.length / subSquareSize_Int; i1 < i1Limit; i1++)
+  {
+    for(let i2 = 0, i2Limit = pattern_ArrArr[0].length / subSquareSize_Int; i2 < i2Limit; i2++)
+    {
+      let subPattern_ArrArr = [];
+      for(let dI = 0; dI < subSquareSize_Int; dI++)
+      {
+        subPattern_ArrArr.push(pattern_ArrArr[i1*subSquareSize_Int+dI].slice(i2*subSquareSize_Int, (i2+1)*subSquareSize_Int));
+      }
+      if(enhancementRules_MapStrStr.has(getStringRepresentation(subPattern_ArrArr)))
+      {
+        let enhancedSubPattern_ArrArr = getArrArrRepresentation(enhancementRules_MapStrStr.get(getStringRepresentation(subPattern_ArrArr)));
+        for(let iS1 = 0, iS1Limit = enhancedSubPattern_ArrArr.length; iS1 < iS1Limit; iS1++)
+        {
+          for(let iS2 = 0, iS2Limit = enhancedSubPattern_ArrArr[0].length; iS2 < iS2Limit; iS2++)
+          {
+            enhancedPattern_ArrArr[i1*iS1Limit+iS1][i2*iS2Limit+iS2] = enhancedSubPattern_ArrArr[iS1][iS2];
+          }
+        }
+      }
+      else
+      {
+        // shouldnt happen ever
+        console.log(subPattern_ArrArr);
+      }
+    }
+  }
+  return enhancedPattern_ArrArr;
+}
+
+function testGetEnhancedPattern()
+{
+  var startingPatter_ArrArr = getArrArrRepresentation("#..#/..../..../#..#");
+  console.log(startingPatter_ArrArr);
+  var enhancementRules_MapStrStr = getEnhancementRulesMap(["../.# => ##./#../..."]);
+  console.log(enhancementRules_MapStrStr);
+  var enhancedPattern_ArrArr = getEnhancedPattern(startingPatter_ArrArr, enhancementRules_MapStrStr, 2);
+  console.log(enhancedPattern_ArrArr);
+  return getStringRepresentation(enhancedPattern_ArrArr) == "##.##./#..#../....../##.##./#..#../......";
+}
 
 // [1,2,3],    [7,4,1]
 // [4,5,6], => [8,5,2]
@@ -21,7 +102,7 @@ function getRotated90ArrArr(arrArr)
 // [7,8,9]     [1,2,3]
 function getFlippedArrArr(arrArr)
 {
-  return arrArr.reverse();
+  return arrArr.slice().reverse();
 }
 
 // [[".", "."], [".", "#"]] -> "../.#"
@@ -81,3 +162,112 @@ function getEnhancementRulesMap(arrStr)
   }
   return rules_MapStrStr;
 }
+
+var input21 = `../.. => #.#/#../...
+#./.. => #.#/#.#/.#.
+##/.. => #../.##/##.
+.#/#. => ..#/..#/..#
+##/#. => ##./.#./#..
+##/## => .../.#./.#.
+.../.../... => ..#./##.#/#.##/##.#
+#../.../... => #.##/..../##../###.
+.#./.../... => ##.#/###./#.##/#.#.
+##./.../... => ##.#/#.##/.#../##.#
+#.#/.../... => ...#/..#./.#.#/.###
+###/.../... => ..../#..#/#.##/##..
+.#./#../... => .#../.#.#/..#./.###
+##./#../... => ..##/#.##/#.../#.#.
+..#/#../... => .##./#.##/.#../##..
+#.#/#../... => #.../.##./...#/###.
+.##/#../... => #.##/..##/.#.#/##..
+###/#../... => #..#/...#/..#./...#
+.../.#./... => .###/.#../..#./####
+#../.#./... => ####/#.../.###/##..
+.#./.#./... => ####/#..#/####/#..#
+##./.#./... => .#../..##/..##/#..#
+#.#/.#./... => .#.#/#.##/#.#./.#.#
+###/.#./... => #.##/#.../###./#..#
+.#./##./... => ###./#.../..../.###
+##./##./... => #.##/###./...#/###.
+..#/##./... => .#.#/###./..#./#...
+#.#/##./... => #.#./##../##../..##
+.##/##./... => ..../..#./.##./.#.#
+###/##./... => #.../.#../#.#./#..#
+.../#.#/... => ##../#.##/.##./.##.
+#../#.#/... => #.#./##.#/.###/.###
+.#./#.#/... => ..../####/####/.#.#
+##./#.#/... => #.##/.###/##../#...
+#.#/#.#/... => ###./..##/#.#./####
+###/#.#/... => .##./..../###./....
+.../###/... => ###./.##./##../.###
+#../###/... => .#../#.../###./...#
+.#./###/... => #.#./#.#./####/###.
+##./###/... => ...#/##../###./#.#.
+#.#/###/... => .#.#/#.#./..#./.##.
+###/###/... => ..../#.##/...#/##..
+..#/.../#.. => ...#/#.##/#..#/..##
+#.#/.../#.. => ..#./##.#/.#.#/..##
+.##/.../#.. => ..##/##../#.#./#.##
+###/.../#.. => #.##/###./...#/.##.
+.##/#../#.. => ##../#.##/##.#/##..
+###/#../#.. => #.##/##../.##./.#.#
+..#/.#./#.. => #..#/##../.###/#.#.
+#.#/.#./#.. => .###/#.##/#.#./####
+.##/.#./#.. => #.#./#.../#.##/...#
+###/.#./#.. => .##./.#.#/#.#./.#.#
+.##/##./#.. => .###/.#.#/...#/#.#.
+###/##./#.. => .###/#.##/#.##/#.#.
+#../..#/#.. => #.../##../.##./###.
+.#./..#/#.. => #.../#.##/#.../###.
+##./..#/#.. => ####/..../##.#/.###
+#.#/..#/#.. => ..##/##.#/#.##/#..#
+.##/..#/#.. => ..#./##.#/#.#./..##
+###/..#/#.. => ..##/...#/#..#/#..#
+#../#.#/#.. => #.../..../#.../#.##
+.#./#.#/#.. => ##../####/.#.#/##..
+##./#.#/#.. => .#../..../#.../.##.
+..#/#.#/#.. => .#../.#.#/.#.#/..#.
+#.#/#.#/#.. => ..#./#.##/#.#./..##
+.##/#.#/#.. => #.##/..##/...#/####
+###/#.#/#.. => .##./.#.#/###./#..#
+#../.##/#.. => ..##/.###/.#../##.#
+.#./.##/#.. => #.##/.##./.##./.###
+##./.##/#.. => .##./.#../..../..##
+#.#/.##/#.. => ..../#.#./##.#/###.
+.##/.##/#.. => #..#/..../##.#/..#.
+###/.##/#.. => ####/##.#/#..#/##..
+#../###/#.. => #.#./###./.###/#...
+.#./###/#.. => ##.#/#..#/#.##/..#.
+##./###/#.. => ..#./...#/..##/...#
+..#/###/#.. => .#.#/..../..##/..##
+#.#/###/#.. => #..#/..#./.#../..#.
+.##/###/#.. => .#.#/..../#..#/...#
+###/###/#.. => #.##/##../.#../....
+.#./#.#/.#. => ..../####/.###/.#.#
+##./#.#/.#. => #.##/...#/####/####
+#.#/#.#/.#. => ..#./##../..../#...
+###/#.#/.#. => ####/#.##/###./...#
+.#./###/.#. => ...#/..#./...#/..#.
+##./###/.#. => .##./#.../.#.#/.###
+#.#/###/.#. => ..../..../.#.#/#.##
+###/###/.#. => ..#./###./##.#/....
+#.#/..#/##. => .###/.#../..#./####
+###/..#/##. => #.##/..#./#..#/....
+.##/#.#/##. => #.../##../####/.##.
+###/#.#/##. => ###./..#./..#./##..
+#.#/.##/##. => #.../##../##.#/#.##
+###/.##/##. => ..#./#..#/#.##/####
+.##/###/##. => .#.#/.###/...#/.#..
+###/###/##. => ####/..../.#.#/...#
+#.#/.../#.# => ##.#/#..#/.##./...#
+###/.../#.# => #.#./.#../...#/...#
+###/#../#.# => .#.#/.#../##../##..
+#.#/.#./#.# => ###./#.../####/.#.#
+###/.#./#.# => ##../#.#./..##/##.#
+###/##./#.# => ####/..../###./.##.
+#.#/#.#/#.# => ...#/.##./##../.###
+###/#.#/#.# => ..#./.##./##.#/.#..
+#.#/###/#.# => ...#/..../..#./...#
+###/###/#.# => #.#./#.#./##../....
+###/#.#/### => #.../##.#/.#../..#.
+###/###/### => ##../..#./##../..#.`;
