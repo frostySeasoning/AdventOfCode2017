@@ -24,35 +24,44 @@ function solve161()
   return positions_ArrStr.reduce((acc, val) => { return acc + val }, "");
 }
 
+// "pnhajoekigcbflmd" for given input
 function solve162()
-{ 
-  var startingPositions_ArrStr = "abcdefghijklmnop".split("");
-  var positions_ArrStr = startingPositions_ArrStr.slice();
+{
+  var positions_ArrStr = "abcdefghijklmnop".split("");
   var dancemoves_ArrStr = input.split(",");
-  for(let i = 0, iterations = dancemoves_ArrStr.length; i < iterations; i++)
+  var history = [];
+  while(true)
   {
-    switch (dancemoves_ArrStr[i][0])
+    history.push(positions_ArrStr.slice().toString());
+    for(let i = 0, iterations = dancemoves_ArrStr.length; i < iterations; i++)
     {
-      case "s":
-        let s = dancemoves_ArrStr[i].slice(1);
-        positions_ArrStr = spinArray(positions_ArrStr, parseInt(s, 10));
-        break;
-      case "x":
-        let x = dancemoves_ArrStr[i].slice(1).split("/");
-        positions_ArrStr = swapArrayIndexes(positions_ArrStr, parseInt(x[0], 10), parseInt(x[1], 10));
-        break;
-      case "p":
-        let p = dancemoves_ArrStr[i].slice(1).split("/");
-        positions_ArrStr = swapArrayElements(positions_ArrStr, p[0], p[1]);
-        break;
+      switch (dancemoves_ArrStr[i][0])
+      {
+        case "s":
+          let s = dancemoves_ArrStr[i].slice(1);
+          positions_ArrStr = spinArray(positions_ArrStr, parseInt(s, 10));
+          break;
+        case "x":
+          let x = dancemoves_ArrStr[i].slice(1).split("/");
+          positions_ArrStr = swapArrayIndexes(positions_ArrStr, parseInt(x[0], 10), parseInt(x[1], 10));
+          break;
+        case "p":
+          let p = dancemoves_ArrStr[i].slice(1).split("/");
+          positions_ArrStr = swapArrayElements(positions_ArrStr, p[0], p[1]);
+          break;
+      }
+    }
+    let index = history.indexOf(positions_ArrStr.toString());
+    if(index != -1)
+    {
+      history.slice(index);
+      return history[1000000000 % history.length].replace(/,/g, "");
+    }
+    if(history.length > 1000)
+    {
+      return -1;
     }
   }
-  var newPositions_ArrInt = [];
-  for(let i = 0, iterations = startingPositions_ArrStr.length; i < iterations; i++)
-  {
-    newPositions_ArrInt.push(positions_ArrStr.indexOf(startingPositions_ArrStr[i]));
-  }
-  return newPositions_ArrInt;
 }
 
 function test161()
